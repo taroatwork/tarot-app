@@ -19,8 +19,8 @@
     --color-background-danger:#3d1717;
     --color-background-info:#10283f;
     --color-text-primary:#ece9f5;
-    --color-text-secondary:#a7a2bd;
-    --color-text-tertiary:#7d7895;
+    --color-text-secondary:#cac5dd;
+    --color-text-tertiary:#ada8c6;
     --color-text-success:#5dcaa5;
     --color-text-warning:#eab366;
     --color-text-danger:#f09595;
@@ -50,7 +50,7 @@
   }
   .page{max-width:760px;margin:0 auto;padding:24px 18px 64px;}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
-  .site-foot{text-align:center;color:var(--color-text-tertiary);font-size:12px;margin-top:40px;line-height:1.7;}
+  .site-foot{text-align:center;color:var(--color-text-tertiary);font-size:13px;margin-top:40px;line-height:1.8;}
   .site-foot a{color:var(--color-text-secondary);}
 </style>
 </head>
@@ -81,7 +81,7 @@
   #tarot-app .ta-cardbtn:active .ta-cardbtn-card{transform:translateY(-2px) scale(.98);}
   #tarot-app .ta-cardbtn-label{font-family:var(--font-serif);font-size:16px;letter-spacing:.04em;color:#f3e6bd;}
   #tarot-app .ta-title{font-family:var(--font-serif);font-size:26px;font-weight:500;color:var(--color-text-primary);text-align:center;margin:0;letter-spacing:.04em;}
-  #tarot-app .ta-sub{font-size:14px;color:var(--color-text-secondary);text-align:center;margin:.4rem 0 0;}
+  #tarot-app .ta-sub{font-size:15px;color:var(--color-text-secondary);text-align:center;margin:.4rem 0 0;line-height:1.6;}
   #tarot-app .ta-card{position:relative;border-radius:9px;}
   #tarot-app .ta-flip{position:relative;transform-style:preserve-3d;transition:transform 1.35s cubic-bezier(.2,.65,.2,1);}
   #tarot-app .ta-flip.flipped{transform:rotateY(180deg);}
@@ -102,16 +102,16 @@
   #tarot-app .ta-shuffling{animation:ta-shuffle .5s ease-in-out infinite;}
   #tarot-app .ta-spreadcard{cursor:pointer;text-align:left;padding:14px 16px;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);transition:border-color .15s,background .15s;}
   #tarot-app .ta-spreadcard:hover{border-color:#7f77dd;background:var(--color-background-secondary);}
-  #tarot-app .ta-pill{display:inline-flex;align-items:center;gap:3px;font-size:12px;padding:3px 9px;border-radius:999px;}
+  #tarot-app .ta-pill{display:inline-flex;align-items:center;gap:4px;font-size:13px;padding:4px 10px;border-radius:999px;}
   #tarot-app .ta-synth{padding:18px;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);margin:8px 0 16px;}
   #tarot-app .ta-reveal{opacity:0;transform:translateY(12px);transition:opacity .8s ease, transform .8s ease;pointer-events:none;}
   #tarot-app .ta-reveal.show{opacity:1;transform:none;pointer-events:auto;}
-  #tarot-app .ta-hint{text-align:center;color:var(--color-text-secondary);font-size:14px;margin:1.4rem 0;font-family:var(--font-serif);letter-spacing:.04em;}
+  #tarot-app .ta-hint{text-align:center;color:#f0e0b0;font-size:19px;font-weight:500;margin:1.4rem 0;font-family:var(--font-serif);letter-spacing:.04em;}
   #tarot-app .ta-sec{padding:12px 0;}
   #tarot-app .ta-sec+.ta-sec{border-top:0.5px solid var(--color-border-tertiary);}
   #tarot-app .ta-sec-h{font-family:var(--font-serif);font-size:16px;display:flex;align-items:center;gap:8px;color:var(--color-text-primary);margin-bottom:6px;}
   #tarot-app .ta-sec-h i{color:#a98ad4;font-size:18px;}
-  #tarot-app .ta-sec-b{font-size:14px;line-height:1.9;color:var(--color-text-primary);}
+  #tarot-app .ta-sec-b{font-size:15.5px;line-height:1.95;color:var(--color-text-primary);}
   #tarot-app .ta-drow{display:flex;gap:10px;padding:12px 0 12px 10px;border-bottom:0.5px solid var(--color-border-tertiary);}
 </style>
 
@@ -256,7 +256,7 @@
         <div class="ta-badge" style="background:${ti.bar};${s.rot?'transform:rotate(-90deg);':''}">${i+1}</div>
       </div>`;
     });
-    const legend=`<div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--color-text-secondary);">
+    const legend=`<div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:14px;color:var(--color-text-secondary);">
       <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#1d9e75;vertical-align:middle;margin-right:4px;"></span>良い兆し</span>
       <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ba7517;vertical-align:middle;margin-right:4px;"></span>注意・課題</span>
       <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#888780;vertical-align:middle;margin-right:4px;"></span>中立</span>
@@ -270,12 +270,12 @@
     if(state.spread!=='celtic') return '';
     return `<div style="display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 4px;">
       <div style="flex:1;min-width:200px;padding:12px 14px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);border-left:3px solid #7f77dd;">
-        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);"><i class="ti ti-plus" aria-hidden="true"></i> 左の十字（①〜⑥）</div>
-        <div style="font-size:13px;color:var(--color-text-secondary);margin-top:4px;line-height:1.6;">いまの状況と、それを取り巻く力。中央で①現状に②障害が交わり、向き合うテーマを示します。</div>
+        <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);"><i class="ti ti-plus" aria-hidden="true"></i> 左の十字（①〜⑥）</div>
+        <div style="font-size:14px;color:var(--color-text-secondary);margin-top:5px;line-height:1.7;">いまの状況と、それを取り巻く力。中央で①現状に②障害が交わり、向き合うテーマを示します。</div>
       </div>
       <div style="flex:1;min-width:200px;padding:12px 14px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);border-left:3px solid #c9a13a;">
-        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);"><i class="ti ti-arrow-up" aria-hidden="true"></i> 右の杖（⑦〜⑩）</div>
-        <div style="font-size:13px;color:var(--color-text-secondary);margin-top:4px;line-height:1.6;">時間の流れとあなたの内面。下から上へ⑦自分→⑧環境→⑨希望と不安→⑩結末、と読み上げます。</div>
+        <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);"><i class="ti ti-arrow-up" aria-hidden="true"></i> 右の杖（⑦〜⑩）</div>
+        <div style="font-size:14px;color:var(--color-text-secondary);margin-top:5px;line-height:1.7;">時間の流れとあなたの内面。下から上へ⑦自分→⑧環境→⑨希望と不安→⑩結末、と読み上げます。</div>
       </div></div>`;
   }
 
@@ -343,15 +343,15 @@
         <div style="flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:${ti.bar};color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;">${i+1}</div>
         <div style="flex:1;min-width:0;">
           <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
-            <span style="font-size:12px;color:var(--color-text-secondary);">${esc(sp.positions[i])}</span>
-            <span style="font-family:var(--font-serif);font-size:15px;color:var(--color-text-primary);">${c.n}</span>
+            <span style="font-size:14px;color:var(--color-text-secondary);">${esc(sp.positions[i])}</span>
+            <span style="font-family:var(--font-serif);font-size:17px;color:var(--color-text-primary);">${c.n}</span>
             <span class="ta-pill" style="background:var(--color-background-secondary);color:var(--color-text-secondary);"><i class="ti ti-arrow-${rev?'down':'up'}" aria-hidden="true"></i>${rev?'逆位置':'正位置'}</span>
             <span class="ta-pill" style="background:${ti.bg};color:${ti.fg};"><i class="ti ${ti.ic}" aria-hidden="true"></i>${ti.lab}</span>
           </div>
-          <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:3px;">位置の意味：${esc(sp.posDesc[i])}</div>
-          <p style="font-size:13px;line-height:1.75;color:var(--color-text-primary);margin:7px 0 4px;">${rev?c.rev:c.up}</p>
-          ${rev?`<div style="font-size:12px;color:var(--color-text-secondary);background:var(--color-background-primary);border-radius:var(--border-radius-md);padding:6px 9px;margin:4px 0;"><i class="ti ti-rotate-2" aria-hidden="true"></i> 正位置なら「${c.up}」という意味。逆位置のいまは、その力が反転・弱まっています。</div>`:''}
-          <div style="font-size:12px;color:var(--color-text-secondary);">${c.kw.map(k=>'#'+k).join(' ')}</div>
+          <div style="font-size:13px;color:var(--color-text-secondary);margin-top:4px;">位置の意味：${esc(sp.posDesc[i])}</div>
+          <p style="font-size:15px;line-height:1.8;color:var(--color-text-primary);margin:8px 0 5px;">${rev?c.rev:c.up}</p>
+          ${rev?`<div style="font-size:13.5px;line-height:1.7;color:var(--color-text-primary);background:var(--color-background-primary);border-radius:var(--border-radius-md);padding:8px 11px;margin:5px 0;"><i class="ti ti-rotate-2" aria-hidden="true"></i> 正位置なら「${c.up}」という意味。逆位置のいまは、その力が反転・弱まっています。</div>`:''}
+          <div style="font-size:13px;color:var(--color-text-secondary);">${c.kw.map(k=>'#'+k).join(' ')}</div>
         </div></div>`;
     }).join('');
   }
@@ -368,7 +368,7 @@
         </div>
         <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:2.6rem auto 0;max-width:300px;">
           <div style="flex:0 0 auto;width:74px;height:74px;background:#ffffff;border-radius:6px;padding:5px;">${QR_SVG}</div>
-          <div style="text-align:left;font-size:11px;line-height:1.6;color:var(--color-text-secondary);">
+          <div style="text-align:left;font-size:13px;line-height:1.7;color:var(--color-text-secondary);">
             <div><i class="ti ti-qrcode" aria-hidden="true"></i> スマホのカメラで読み取ってアクセス</div>
             <div style="color:var(--color-text-tertiary);word-break:break-all;">tarot-app-beta-five.vercel.app</div>
             <div>このQRコードで友だちにも共有できます</div>
@@ -458,7 +458,7 @@
         ${sections}
       </div></div>
       <div id="ta-rev-2" class="ta-reveal" style="display:none;">
-        <div style="font-family:var(--font-serif);font-size:15px;color:var(--color-text-primary);margin:1.4rem 0 .4rem;">各カードの意味（色＝吉凶 / 矢印＝正逆）</div>
+        <div style="font-family:var(--font-serif);font-size:17px;color:var(--color-text-primary);margin:1.4rem 0 .4rem;">各カードの意味（色＝吉凶 / 矢印＝正逆）</div>
         <div>${detailList()}</div>
       </div>
       <div id="ta-rev-3" class="ta-reveal" style="display:none;gap:10px;justify-content:center;margin-top:1.2rem;flex-wrap:wrap;">
