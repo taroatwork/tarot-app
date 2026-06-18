@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>タロット・リーディング | 大アルカナ22枚</title>
+<meta name="description" content="大アルカナ22枚から選ぶ、ブラウザ完結のタロット占い。スプレッド本来の配置と、質問への結論・具体的な助言を表示します。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.24.0/dist/tabler-icons.min.css">
+<style>
+  :root{
+    --color-background-primary:#1c1830;
+    --color-background-secondary:#252040;
+    --color-background-tertiary:#14101f;
+    --color-background-success:#0f3a30;
+    --color-background-warning:#3d2e12;
+    --color-background-danger:#3d1717;
+    --color-background-info:#10283f;
+    --color-text-primary:#ece9f5;
+    --color-text-secondary:#a7a2bd;
+    --color-text-tertiary:#7d7895;
+    --color-text-success:#5dcaa5;
+    --color-text-warning:#eab366;
+    --color-text-danger:#f09595;
+    --color-text-info:#85b7eb;
+    --color-border-tertiary:rgba(255,255,255,.12);
+    --color-border-secondary:rgba(255,255,255,.22);
+    --color-border-primary:rgba(255,255,255,.34);
+    --font-sans:"Noto Sans JP",system-ui,-apple-system,sans-serif;
+    --font-serif:"Noto Serif JP",serif;
+    --font-mono:ui-monospace,SFMono-Regular,Menlo,monospace;
+    --border-radius-md:8px;
+    --border-radius-lg:12px;
+    --border-radius-xl:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--font-sans);
+    color:var(--color-text-primary);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #2a2150 0%, rgba(42,33,80,0) 60%),
+      radial-gradient(900px 500px at 90% 110%, #1f2b4d 0%, rgba(31,43,77,0) 55%),
+      #14101f;
+    background-attachment:fixed;
+    min-height:100vh;
+  }
+  .page{max-width:760px;margin:0 auto;padding:24px 18px 64px;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+  .site-foot{text-align:center;color:var(--color-text-tertiary);font-size:12px;margin-top:40px;line-height:1.7;}
+  .site-foot a{color:var(--color-text-secondary);}
+</style>
+</head>
+<body>
+<div class="page">
+<div id="tarot-app" style="font-family: var(--font-sans);">
+  <h2 class="sr-only">大アルカナ22枚から選ぶタロットアプリ。スプレッド本来の配置でカードを並べ、各カードの吉凶を色分けし、正逆を視覚化し、質問への結論と具体的な助言をセクションごとに解説します。</h2>
+  <div id="tarot-screen"></div>
+</div>
+
+<p class="site-foot">大アルカナ22枚 タロット・リーディング　/　ブラウザ完結・データはお使いの端末内にのみ保存されます<br>※エンターテインメント目的のアプリです</p>
+</div>
+
+<style>
+  #tarot-app .ta-btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:10px 18px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:15px;cursor:pointer;font-family:inherit;transition:background .15s,transform .1s;}
+  #tarot-app .ta-btn:hover{background:var(--color-background-secondary);}
+  #tarot-app .ta-btn:active{transform:scale(.98);}
+  #tarot-app .ta-btn-primary{background:#2b2350;color:#e9d8a6;border-color:#4a3d7a;}
+  #tarot-app .ta-btn-primary:hover{background:#372b66;}
+  #tarot-app .ta-title{font-family:var(--font-serif);font-size:26px;font-weight:500;color:var(--color-text-primary);text-align:center;margin:0;letter-spacing:.04em;}
+  #tarot-app .ta-sub{font-size:14px;color:var(--color-text-secondary);text-align:center;margin:.4rem 0 0;}
+  #tarot-app .ta-card{position:relative;border-radius:9px;}
+  #tarot-app .ta-flip{position:relative;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.4,.1,.2,1);}
+  #tarot-app .ta-flip.flipped{transform:rotateY(180deg);}
+  #tarot-app .ta-face,#tarot-app .ta-back{position:absolute;inset:0;border-radius:9px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;}
+  #tarot-app .ta-back{background:#1a1533;border:1px solid #3a2f66;display:flex;align-items:center;justify-content:center;}
+  #tarot-app .ta-face{transform:rotateY(180deg);}
+  #tarot-app .ta-frame{position:relative;width:100%;height:100%;background:#14102a;border:1px solid #4a3d7a;border-radius:9px;overflow:hidden;box-shadow:inset 0 0 0 3px rgba(201,184,120,.25);}
+  #tarot-app .ta-scene{position:absolute;inset:0;}
+  #tarot-app .ta-focal{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#f3e6bd;}
+  #tarot-app .ta-num{position:absolute;top:4px;left:0;right:0;text-align:center;font-family:var(--font-serif);color:#d9c485;letter-spacing:.1em;z-index:2;}
+  #tarot-app .ta-nm{position:absolute;bottom:0;left:0;right:0;text-align:center;background:rgba(20,16,42,.82);border-top:1px solid rgba(201,184,120,.4);color:#f3e6bd;font-family:var(--font-serif);z-index:2;padding:3px 2px;}
+  #tarot-app .ta-badge{position:absolute;top:-8px;left:-8px;width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;z-index:6;color:#fff;border:2px solid #fff;}
+  #tarot-app .ta-deckcard{cursor:pointer;transition:transform .18s;width:54px;height:86px;background:#1a1533;border:1px solid #3a2f66;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+  #tarot-app .ta-deckcard:hover{transform:translateY(-12px);}
+  #tarot-app .ta-deckcard.picked{opacity:.22;pointer-events:none;transform:translateY(0);}
+  #tarot-app select,#tarot-app textarea{font-family:inherit;}
+  @keyframes ta-shuffle{0%{transform:translateX(0) rotate(0)}25%{transform:translateX(-22px) rotate(-8deg)}50%{transform:translateX(18px) rotate(7deg)}75%{transform:translateX(-10px) rotate(-4deg)}100%{transform:translateX(0) rotate(0)}}
+  #tarot-app .ta-shuffling{animation:ta-shuffle .5s ease-in-out infinite;}
+  #tarot-app .ta-spreadcard{cursor:pointer;text-align:left;padding:14px 16px;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);transition:border-color .15s,background .15s;}
+  #tarot-app .ta-spreadcard:hover{border-color:#7f77dd;background:var(--color-background-secondary);}
+  #tarot-app .ta-pill{display:inline-flex;align-items:center;gap:3px;font-size:12px;padding:3px 9px;border-radius:999px;}
+  #tarot-app .ta-synth{padding:18px;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);margin:8px 0 16px;}
+  #tarot-app .ta-sec{padding:12px 0;}
+  #tarot-app .ta-sec+.ta-sec{border-top:0.5px solid var(--color-border-tertiary);}
+  #tarot-app .ta-sec-h{font-family:var(--font-serif);font-size:16px;display:flex;align-items:center;gap:8px;color:var(--color-text-primary);margin-bottom:6px;}
+  #tarot-app .ta-sec-h i{color:#a98ad4;font-size:18px;}
+  #tarot-app .ta-sec-b{font-size:14px;line-height:1.9;color:var(--color-text-primary);}
+  #tarot-app .ta-drow{display:flex;gap:10px;padding:12px 0 12px 10px;border-bottom:0.5px solid var(--color-border-tertiary);}
+</style>
+
+<script>
+(function(){
+  const mount = () => document.getElementById('tarot-screen');
+
+  const DECK = [
+    {id:0,n:"愚者",e:"The Fool",rn:"0",ic:"ti-mountain",mo:"mountain",col:"#6f9e6a",t:1,kw:["可能性","自由","無垢"],up:"新しいことへ思いきって飛び込むとき。失敗を恐れず始めれば道は開けます。",rev:"準備不足のまま動くと空回りしがち。今は計画を固める段階です。",aU:"恐れず最初の一歩を踏み出す",aR:"動く前に足場を固める"},
+    {id:1,n:"魔術師",e:"The Magician",rn:"I",ic:"ti-wand",mo:"stars",col:"#c2a13a",t:1,kw:["創造","意志","才能"],up:"あなたには実現する力が揃っています。自分から動けば結果がついてきます。",rev:"口先だけ・準備不足になりがち。やると決めたら手を動かして。",aU:"自分から主体的に動く",aR:"言葉より実際の準備を整える"},
+    {id:2,n:"女教皇",e:"The High Priestess",rn:"II",ic:"ti-moon",mo:"pillars",col:"#5c7fb8",t:0,kw:["直感","知性","秘密"],up:"答えはすでにあなたの中に。焦らず直感に耳を澄ませて。",rev:"考えすぎ・感情を抑え込みがち。本音にフタをしないで。",aU:"自分の直感を信じる",aR:"気持ちを我慢しすぎない"},
+    {id:3,n:"女帝",e:"The Empress",rn:"III",ic:"ti-flower",mo:"stars",col:"#d07ba0",t:1,kw:["豊かさ","愛情","実り"],up:"愛情や成果に恵まれる豊かな時期。受け取り、育てていきましょう。",rev:"与えすぎ・抱え込みすぎに注意。まず自分を満たして。",aU:"豊かさを素直に受け取る",aR:"抱え込みを少し手放す"},
+    {id:4,n:"皇帝",e:"The Emperor",rn:"IV",ic:"ti-crown",mo:"mountain",col:"#b85a3a",t:1,kw:["安定","責任","主導"],up:"主導権を握り、土台をしっかり築くとき。責任ある行動が信頼を生みます。",rev:"頑固・押しつけになりがち。少し肩の力を抜いて。",aU:"責任を持って土台を築く",aR:"頑なさを緩め柔軟になる"},
+    {id:5,n:"教皇",e:"The Hierophant",rn:"V",ic:"ti-building-church",mo:"pillars",col:"#a98a4a",t:0,kw:["信頼","学び","常識"],up:"信頼できる人や定番のやり方に従うと安心。学びや相談が助けになります。",rev:"古いルールに縛られすぎかも。自分のやり方を試してよいとき。",aU:"信頼できる人に相談する",aR:"古い枠を一度疑ってみる"},
+    {id:6,n:"恋人",e:"The Lovers",rn:"VI",ic:"ti-heart",mo:"sun",col:"#d4647e",t:1,kw:["愛","選択","相性"],up:"良い縁や心が通じ合う関係の暗示。大切な選択は心に正直に。",rev:"迷いや誘惑で選びきれない状態。逃げずに向き合って。",aU:"心に正直な選択をする",aR:"迷いから逃げず向き合う"},
+    {id:7,n:"戦車",e:"The Chariot",rn:"VII",ic:"ti-horse-toy",mo:"stars",col:"#4a78a8",t:1,kw:["前進","勝利","行動"],up:"勢いに乗って前進すれば勝てるとき。迷わず進んでよい流れです。",rev:"焦って空回り・暴走しがち。一度スピードを落として方向を確認。",aU:"迷わず勢いよく進む",aR:"焦らず方向を定め直す"},
+    {id:8,n:"力",e:"Strength",rn:"VIII",ic:"ti-paw",mo:"sun",col:"#c98a2a",t:1,kw:["勇気","忍耐","余裕"],up:"力づくでなく、優しさと粘り強さで乗り越えられます。自分を信じて。",rev:"自信を失い、感情に振り回されがち。まず落ち着いて。",aU:"焦らず粘り強く向き合う",aR:"落ち着いて自信を取り戻す"},
+    {id:9,n:"隠者",e:"The Hermit",rn:"IX",ic:"ti-bulb",mo:"moon",col:"#7d8a95",t:0,kw:["内省","探求","熟考"],up:"一度立ち止まり、一人でじっくり考えるとき。答えは静けさの中に。",rev:"閉じこもりすぎ・孤立しがち。たまには人を頼って。",aU:"一人で静かに考える時間を持つ",aR:"閉じこもらず人を頼る"},
+    {id:10,n:"運命の輪",e:"Wheel of Fortune",rn:"X",ic:"ti-loader",mo:"wheel",col:"#5a9e8a",t:1,kw:["転機","好機","変化"],up:"流れが良い方へ変わる転機。チャンスが来たら迷わず乗って。",rev:"タイミングがずれがち。今は無理せず流れが変わるのを待って。",aU:"巡ってきた好機に乗る",aR:"無理せず時機を待つ"},
+    {id:11,n:"正義",e:"Justice",rn:"XI",ic:"ti-scale",mo:"pillars",col:"#5b7fb8",t:0,kw:["公平","判断","誠実"],up:"フェアで筋の通った判断が報われるとき。ごまかさず正攻法で。",rev:"判断が偏ったり、責任から逃げがち。事実を冷静に見て。",aU:"筋を通して公平に判断する",aR:"責任から目をそらさない"},
+    {id:12,n:"吊された男",e:"The Hanged Man",rn:"XII",ic:"ti-hourglass",mo:"pillars",col:"#6a8fa0",t:-1,kw:["我慢","視点転換","保留"],up:"今は動くより待つとき。見方を変えると突破口が見えます。",rev:"報われない我慢を続けているかも。手放す勇気も必要です。",aU:"今は焦らず見方を変えてみる",aR:"無駄な我慢は思いきって手放す"},
+    {id:13,n:"死神",e:"Death",rn:"XIII",ic:"ti-skull",mo:"moon",col:"#5a5566",t:-1,kw:["区切り","再出発","変化"],up:"一つの区切り。終わらせることで新しい始まりが訪れます。",rev:"終わらせられず、ずるずる引きずっている状態。区切りを。",aU:"思いきって区切りをつける",aR:"執着を手放して前へ進む"},
+    {id:14,n:"節制",e:"Temperance",rn:"XIV",ic:"ti-droplet",mo:"water",col:"#4f9e9e",t:1,kw:["調和","バランス","節度"],up:"ほどよいバランスが取れている良い状態。無理なく中庸を保って。",rev:"やりすぎ・偏りでバランスが崩れ気味。ペースを整えて。",aU:"無理のないバランスを保つ",aR:"やりすぎ・偏りを整える"},
+    {id:15,n:"悪魔",e:"The Devil",rn:"XV",ic:"ti-flame",mo:"flame",col:"#9a4a3a",t:-1,kw:["執着","誘惑","依存"],up:"断ち切れない欲や依存への警告。鎖は自分で外せると気づいて。",rev:"悪い縁・習慣から抜け出せる兆し。解放のチャンスです。",aU:"縛っている執着に気づく",aR:"悪い習慣から自分を解き放つ"},
+    {id:16,n:"塔",e:"The Tower",rn:"XVI",ic:"ti-building-tower",mo:"flame",col:"#8a3a3a",t:-1,kw:["崩壊","急変","立て直し"],up:"突然の変化や崩れごと。痛みますが、不要なものが壊れて再出発できます。",rev:"問題を先延ばしにして崩壊を引き延ばしている状態。早めの対処を。",aU:"崩れるものは潔く手放す",aR:"先延ばしせず早めに立て直す"},
+    {id:17,n:"星",e:"The Star",rn:"XVII",ic:"ti-star",mo:"stars",col:"#5a8fc2",t:1,kw:["希望","癒し","回復"],up:"希望が見えてくるとき。焦らなくて大丈夫、未来は明るいです。",rev:"理想と現実のギャップに失望気味。小さな一歩から取り戻して。",aU:"希望を信じて静かに進む",aR:"理想だけでなく現実も見る"},
+    {id:18,n:"月",e:"The Moon",rn:"XVIII",ic:"ti-moon-stars",mo:"moon",col:"#6a6fa8",t:-1,kw:["不安","迷い","曖昧さ"],up:"先が見えず不安なとき。はっきりしない情報に振り回されないで。",rev:"霧が晴れ、不安や誤解が解けていく兆し。真実が見えてきます。",aU:"不安に飲まれず慎重に進む",aR:"晴れてくる兆しを信じる"},
+    {id:19,n:"太陽",e:"The Sun",rn:"XIX",ic:"ti-sun",mo:"sun",col:"#d4a52a",t:1,kw:["成功","喜び","元気"],up:"明るい成功と喜びの暗示。自信を持って前に出てよいときです。",rev:"少し元気が曇り気味、または過信に注意。足元を確かめて。",aU:"自信を持って明るく動く",aR:"過信せず足元を確かめる"},
+    {id:20,n:"審判",e:"Judgement",rn:"XX",ic:"ti-bell",mo:"sun",col:"#5a8a9e",t:1,kw:["再生","決断","転機"],up:"やり直しや復活のチャンス。過去を清算して次の段階へ。",rev:"決断を先延ばしにして後悔しがち。今こそ腹を決めて。",aU:"過去を清算して前へ進む",aR:"迷わず決断する"},
+    {id:21,n:"世界",e:"The World",rn:"XXI",ic:"ti-world",mo:"wheel",col:"#4f9e7a",t:1,kw:["完成","達成","満足"],up:"物事が良い形で完成・達成するとき。一区切りを喜び、次へ。",rev:"あと一歩で完成という状態。詰めを丁寧に仕上げて。",aU:"一区切りを祝って次へ向かう",aR:"あと一歩を丁寧に仕上げる"}
+  ];
+
+  const SPREADS = {
+    one:   {name:"ワンオラクル", count:1, positions:["今日のメッセージ"], desc:"1枚で今の核心を読む",
+            posDesc:["今のあなたへの核心メッセージ"]},
+    three: {name:"スリーカード", count:3, positions:["過去","現在","未来"], desc:"過去・現在・未来の流れで読む",
+            posDesc:["ここに至るまでの流れ・原因","今まさに向き合っているテーマ","これから訪れる展開"]},
+    celtic:{name:"ケルト十字", count:10, positions:["現状","障害","根底にあるもの","過去","目標・可能性","近い未来","あなた自身","周囲・環境","希望と不安","結末"], desc:"十字と杖の配置で多角的に読む",
+            posDesc:["今あなたが置かれている状況","行く手をはばむ／後押しする力","状況の根っこ・無意識の土台","ここに至るまでの流れ","目指せる到達点・理想","すぐ先に訪れる展開","あなたの本心・スタンス","周囲の人や環境の影響","心の中の期待と恐れ","最終的に行き着く先"]}
+  };
+
+  let state = { spread:null, question:"", picks:[] };
+
+  function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+  function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function rng(s){ let x=(s*9301+49297)%233280; return ()=>{ x=(x*9301+49297)%233280; return x/233280; }; }
+  function eff(p){ return p.reversed ? -p.card.t : p.card.t; }
+  function toneInfo(p){ const e=eff(p);
+    if(e>0) return {lab:'良い兆し',bar:'#1d9e75',bg:'var(--color-background-success)',fg:'var(--color-text-success)',ic:'ti-mood-smile'};
+    if(e<0) return {lab:'注意・課題',bar:'#ba7517',bg:'var(--color-background-warning)',fg:'var(--color-text-warning)',ic:'ti-alert-triangle'};
+    return {lab:'中立',bar:'#888780',bg:'var(--color-background-secondary)',fg:'var(--color-text-secondary)',ic:'ti-minus'};
+  }
+
+  function motif(type,col,seed){
+    const r=rng(seed+1); let s='';
+    for(let i=0;i<16;i++){ const x=Math.round(r()*100), y=Math.round(r()*100), rad=(r()*1+.5).toFixed(1); s+=`<circle cx="${x}" cy="${y}" r="${rad}" fill="#e9d8a6" opacity="${(.3+r()*.5).toFixed(2)}"/>`; }
+    if(type==='sun'){ s+=`<g>`; for(let a=0;a<12;a++){const ang=a*30*Math.PI/180;const x1=50+Math.cos(ang)*20,y1=66+Math.sin(ang)*20,x2=50+Math.cos(ang)*30,y2=66+Math.sin(ang)*30;s+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${col}" stroke-width="2" opacity=".8"/>`;} s+=`<circle cx="50" cy="66" r="17" fill="${col}" opacity=".35"/></g>`; }
+    else if(type==='moon'){ s+=`<g><circle cx="68" cy="40" r="16" fill="${col}" opacity=".45"/><circle cx="74" cy="36" r="14" fill="#14102a"/></g>`; }
+    else if(type==='pillars'){ s+=`<rect x="9" y="34" width="11" height="118" rx="2" fill="${col}" opacity=".4"/><rect x="80" y="34" width="11" height="118" rx="2" fill="${col}" opacity=".4"/>`; }
+    else if(type==='water'){ for(let i=0;i<3;i++){const yy=128+i*8;s+=`<path d="M0 ${yy} Q25 ${yy-6} 50 ${yy} T100 ${yy}" fill="none" stroke="${col}" stroke-width="2" opacity=".55"/>`;} }
+    else if(type==='flame'){ s+=`<path d="M50 96 C38 120 30 130 30 144 L70 144 C70 130 62 120 50 96 Z" fill="${col}" opacity=".4"/><path d="M50 110 C44 124 40 130 40 140 L60 140 C60 130 56 124 50 110 Z" fill="#e9d8a6" opacity=".4"/>`; }
+    else if(type==='wheel'){ s+=`<g opacity=".4"><circle cx="50" cy="80" r="30" fill="none" stroke="${col}" stroke-width="2"/><circle cx="50" cy="80" r="22" fill="none" stroke="${col}" stroke-width="1.5"/>`; for(let a=0;a<8;a++){const ang=a*45*Math.PI/180;s+=`<line x1="${(50+Math.cos(ang)*12).toFixed(1)}" y1="${(80+Math.sin(ang)*12).toFixed(1)}" x2="${(50+Math.cos(ang)*30).toFixed(1)}" y2="${(80+Math.sin(ang)*30).toFixed(1)}" stroke="${col}" stroke-width="1.5"/>`;} s+=`</g>`; }
+    else if(type==='mountain'){ s+=`<path d="M0 152 L30 110 L52 140 L72 104 L100 152 Z" fill="${col}" opacity=".4"/>`; }
+    return s;
+  }
+
+  function artHTML(card, reversed, w){
+    const rot = reversed ? 'transform:rotate(180deg);' : '';
+    return `<div class="ta-frame">
+      <div class="ta-scene" style="${rot}">
+        <svg viewBox="0 0 100 160" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;">${motif(card.mo,card.col,card.id)}</svg>
+        <div style="position:absolute;left:50%;top:50%;width:${Math.round(w*0.52)}px;height:${Math.round(w*0.52)}px;transform:translate(-50%,-50%);border-radius:50%;background:${card.col};opacity:.32;"></div>
+        <i class="ta-focal ti ${card.ic}" style="font-size:${Math.round(w*0.34)}px;" aria-hidden="true"></i>
+      </div>
+      <div class="ta-num" style="font-size:${Math.max(10,Math.round(w*0.12))}px;">${card.rn}</div>
+      <div class="ta-nm" style="font-size:${Math.max(10,Math.round(w*0.12))}px;">${card.n}</div>
+      ${reversed?`<div style="position:absolute;top:3px;right:4px;color:#e8b9a0;font-size:${Math.max(11,Math.round(w*0.16))}px;z-index:3;"><i class="ti ti-arrow-down" aria-hidden="true"></i></div>`:''}
+    </div>`;
+  }
+  function cardBack(sz){ const i=sz||26; return `<div style="width:74%;height:80%;border:1px solid #5a4d8a;border-radius:7px;display:flex;align-items:center;justify-content:center;"><i class="ti ti-sparkles" style="font-size:${i}px;color:#7a6db5;" aria-hidden="true"></i></div>`; }
+
+  function flipCard(i, card, reversed, w){
+    return `<div class="ta-card ta-flip" id="flip-${i}" style="width:${w}px;height:${Math.round(w*1.58)}px;">
+      <div class="ta-back">${cardBack(Math.round(w*0.24))}</div>
+      <div class="ta-face">${artHTML(card,reversed,w)}</div>
+    </div>`;
+  }
+  function stateChip(p){ const ti=toneInfo(p); return `<div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;align-items:center;">
+    <span class="ta-pill" style="background:var(--color-background-secondary);color:var(--color-text-secondary);"><i class="ti ti-arrow-${p.reversed?'down':'up'}" aria-hidden="true"></i>${p.reversed?'逆位置':'正位置'}</span>
+    <span class="ta-pill" style="background:${ti.bg};color:${ti.fg};"><i class="ti ${ti.ic}" aria-hidden="true"></i>${ti.lab}</span></div>`; }
+
+  function layoutSpread(){
+    const P=state.picks, sp=SPREADS[state.spread];
+    if(state.spread==='one'){
+      return `<div style="display:flex;justify-content:center;padding:1rem 0;"><div style="text-align:center;"><div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;">${esc(sp.positions[0])}</div>${flipCard(0,P[0].card,P[0].reversed,138)}${stateChip(P[0])}</div></div>`;
+    }
+    if(state.spread==='three'){
+      return `<div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;padding:1rem 0;">`+
+        P.map((p,i)=>`<div style="text-align:center;"><div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;">${esc(sp.positions[i])}</div>${flipCard(i,p.card,p.reversed,108)}${stateChip(p)}</div>`).join('')+`</div>`;
+    }
+    const w=72,h=Math.round(w*1.58),ux=w+16,uy=h+12;
+    const crossOff=Math.round((4*h+3*12 - (3*h+2*12))/2);
+    const col0=0,col1=ux,col2=ux*2,col3=ux*3+22;
+    const r0=crossOff,r1=crossOff+uy,r2=crossOff+uy*2;
+    const slots=[{x:col1,y:r1,rot:false},{x:col1,y:r1,rot:true},{x:col1,y:r2,rot:false},{x:col0,y:r1,rot:false},{x:col1,y:r0,rot:false},{x:col2,y:r1,rot:false},{x:col3,y:uy*3,rot:false},{x:col3,y:uy*2,rot:false},{x:col3,y:uy*1,rot:false},{x:col3,y:0,rot:false}];
+    const cw=col3+w, ch=4*h+3*12;
+    let inner='';
+    P.forEach((p,i)=>{ const s=slots[i], ti=toneInfo(p);
+      inner+=`<div style="position:absolute;left:${s.x}px;top:${s.y}px;width:${w}px;height:${h}px;z-index:${s.rot?5:2};${s.rot?'transform:rotate(90deg);':''}">
+        ${flipCard(i,p.card,p.reversed,w)}
+        <div class="ta-badge" style="background:${ti.bar};${s.rot?'transform:rotate(-90deg);':''}">${i+1}</div>
+      </div>`;
+    });
+    const legend=`<div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--color-text-secondary);">
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#1d9e75;vertical-align:middle;margin-right:4px;"></span>良い兆し</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ba7517;vertical-align:middle;margin-right:4px;"></span>注意・課題</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#888780;vertical-align:middle;margin-right:4px;"></span>中立</span>
+      <span><i class="ti ti-arrow-down" aria-hidden="true"></i> 逆位置</span></div>`;
+    return `<div style="overflow-x:auto;padding:1rem 0 .2rem;"><div style="position:relative;width:${cw}px;height:${ch}px;margin:0 auto;">${inner}</div></div>${legend}`;
+  }
+
+  function celticGuide(){
+    if(state.spread!=='celtic') return '';
+    return `<div style="display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 4px;">
+      <div style="flex:1;min-width:200px;padding:12px 14px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);border-left:3px solid #7f77dd;">
+        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);"><i class="ti ti-plus" aria-hidden="true"></i> 左の十字（①〜⑥）</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-top:4px;line-height:1.6;">いまの状況と、それを取り巻く力。中央で①現状に②障害が交わり、向き合うテーマを示します。</div>
+      </div>
+      <div style="flex:1;min-width:200px;padding:12px 14px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);border-left:3px solid #c9a13a;">
+        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);"><i class="ti ti-arrow-up" aria-hidden="true"></i> 右の杖（⑦〜⑩）</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-top:4px;line-height:1.6;">時間の流れとあなたの内面。下から上へ⑦自分→⑧環境→⑨希望と不安→⑩結末、と読み上げます。</div>
+      </div></div>`;
+  }
+
+  function leaning(){
+    let sc=0; state.picks.forEach(p=>{ sc += eff(p); });
+    if(state.spread==='celtic') sc += eff(state.picks[9]);
+    if(sc>=2) return {h:'追い風',t:'全体としては良い流れです。前向きに動いて大丈夫。'};
+    if(sc<=-2) return {h:'いまは慎重に',t:'急がず慎重に進むのが賢明なとき。焦って動くと空回りしやすいです。'};
+    return {h:'鍵はあなたの動き方',t:'良い面と乗り越えるべき面が半々です。次の一歩を意識すれば結果は良い方へ動きます。'};
+  }
+  function toneSummary(){ const P=state.picks; let pos=0,neg=0,neu=0; P.forEach(p=>{const e=eff(p);if(e>0)pos++;else if(e<0)neg++;else neu++;});
+    return `今回は良い兆しのカードが${pos}枚、注意すべきカードが${neg}枚${neu?`、中立が${neu}枚`:''}出ています。`; }
+
+  function buildSections(){
+    const P=state.picks;
+    const m=p=>p.reversed?p.card.rev:p.card.up;
+    const a=p=>p.reversed?p.card.aR:p.card.aU;
+    const nm=p=>p.card.n;
+    const k0=p=>p.card.kw[0];
+    const st=p=>p.reversed?'逆位置':'正位置';
+    const L=leaning();
+    const qref = state.question ? `ご相談の「${esc(state.question)}」について、` : '今回のテーマについて、';
+    if(state.spread==='one'){
+      const p=P[0];
+      return [
+        {title:'メッセージ',icon:'ti-message-circle',body:`${qref}選ばれた1枚は<b>${nm(p)}（${st(p)}）</b>。${m(p)} このカードは「${k0(p)}」が今のあなたの中心テーマであることを示しています。`},
+        {title:'結論',icon:'ti-flag',body:`${toneSummary()}カードが指し示すのは「${L.h}」という流れです。${L.t}`},
+        {title:'次の一歩',icon:'ti-walk',body:`${a(p)}こと。それが今のあなたへの答えになります。`}
+      ];
+    }
+    if(state.spread==='three'){
+      return [
+        {title:'これまで（過去）',icon:'ti-history',body:`<b>${nm(P[0])}（${st(P[0])}）</b>。${m(P[0])} 「${k0(P[0])}」が、今の状況の土台になっています。`},
+        {title:'いま（現在）',icon:'ti-target',body:`${qref}現在は<b>${nm(P[1])}（${st(P[1])}）</b>。${m(P[1])} これが今まさに向き合っているテーマで、結果を左右する要となります。`},
+        {title:'これから（未来）',icon:'ti-sparkles',body:`このまま進むと<b>${nm(P[2])}（${st(P[2])}）</b>へ。${m(P[2])} 「${k0(P[2])}」が、これから訪れる展開です。`},
+        {title:'結論',icon:'ti-flag',body:`${toneSummary()}3枚の流れを合わせて読むと、向かう先は「${L.h}」です。${L.t}`},
+        {title:'次の一歩',icon:'ti-walk',body:`まず<u>${a(P[1])}</u>ところから始め、その先で<u>${a(P[2])}</u>こと。これが望む未来への近道です。`}
+      ];
+    }
+    const cross = eff(P[1])>=0 ? 'あなたを後押しする力として' : '乗り越えるべき課題として';
+    return [
+      {title:'今の中心',icon:'ti-target',body:`${qref}中央の十字には今の状況が組み上がっています。あなたは今 <b>${nm(P[0])}</b> の只中——${m(P[0])} そこへ <b>${nm(P[1])}</b> が${cross}交わり、${m(P[1])} 根底には ${nm(P[2])}（${k0(P[2])}）があり、${nm(P[3])} という過去の流れが今を形づくっています。届きうる目標として ${nm(P[4])}（${k0(P[4])}）が見えています。`},
+      {title:'これからの流れ',icon:'ti-arrow-right',body:`右の杖は、これからの動きとあなたの内面を映します。すぐ先には <b>${nm(P[5])}</b> が控え、${m(P[5])} あなた自身は ${nm(P[6])}（${k0(P[6])}）の構えで臨もうとし、周囲は ${nm(P[7])} という状況。心の中では ${nm(P[8])}——「${k0(P[8])}」の思いが揺れています。そして行き着く先は <b>${nm(P[9])}（${st(P[9])}）</b>。${m(P[9])}`},
+      {title:'結論',icon:'ti-flag',body:`${toneSummary()}十字（今の状況）と杖（流れと結末）を重ねて読むと、向かう先は「${L.h}」です。${L.t}`},
+      {title:'次の一歩',icon:'ti-walk',body:`結末の${nm(P[9])}が告げるとおり、<u>${a(P[9])}</u>ことが最終的な指針です。そのために、目の前の課題（${nm(P[1])}）には <u>${a(P[1])}</u>姿勢で向き合い、まずは <u>${a(P[6])}</u>ことから始めてみてください。`}
+    ];
+  }
+
+  function detailList(){
+    const sp=SPREADS[state.spread];
+    return state.picks.map((p,i)=>{
+      const c=p.card, rev=p.reversed, ti=toneInfo(p);
+      return `<div class="ta-drow" style="border-left:3px solid ${ti.bar};">
+        <div style="flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:${ti.bar};color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;">${i+1}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;">
+            <span style="font-size:12px;color:var(--color-text-secondary);">${esc(sp.positions[i])}</span>
+            <span style="font-family:var(--font-serif);font-size:15px;color:var(--color-text-primary);">${c.n}</span>
+            <span class="ta-pill" style="background:var(--color-background-secondary);color:var(--color-text-secondary);"><i class="ti ti-arrow-${rev?'down':'up'}" aria-hidden="true"></i>${rev?'逆位置':'正位置'}</span>
+            <span class="ta-pill" style="background:${ti.bg};color:${ti.fg};"><i class="ti ${ti.ic}" aria-hidden="true"></i>${ti.lab}</span>
+          </div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:3px;">位置の意味：${esc(sp.posDesc[i])}</div>
+          <p style="font-size:13px;line-height:1.75;color:var(--color-text-primary);margin:7px 0 4px;">${rev?c.rev:c.up}</p>
+          ${rev?`<div style="font-size:12px;color:var(--color-text-secondary);background:var(--color-background-primary);border-radius:var(--border-radius-md);padding:6px 9px;margin:4px 0;"><i class="ti ti-rotate-2" aria-hidden="true"></i> 正位置なら「${c.up}」という意味。逆位置のいまは、その力が反転・弱まっています。</div>`:''}
+          <div style="font-size:12px;color:var(--color-text-secondary);">${c.kw.map(k=>'#'+k).join(' ')}</div>
+        </div></div>`;
+    }).join('');
+  }
+
+  function screenTop(){
+    mount().innerHTML = `
+      <div style="text-align:center;padding:1.5rem 0 2rem;">
+        <i class="ti ti-sparkles" style="font-size:34px;color:#a98ad4;" aria-hidden="true"></i>
+        <h2 class="ta-title" style="margin-top:.4rem;">タロット・リーディング</h2>
+        <p class="ta-sub">大アルカナ22枚から選び、あなたの問いへのメッセージを読み解きます</p>
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:1.8rem;flex-wrap:wrap;">
+          <button class="ta-btn ta-btn-primary" id="ta-start"><i class="ti ti-cards" aria-hidden="true"></i>占いを始める</button>
+          <button class="ta-btn" id="ta-history"><i class="ti ti-history" aria-hidden="true"></i>履歴を見る</button>
+        </div>
+      </div>`;
+    document.getElementById('ta-start').onclick = screenSpread;
+    document.getElementById('ta-history').onclick = screenHistory;
+  }
+
+  function screenSpread(){
+    state = {spread:null, question:"", picks:[]};
+    const cards = Object.entries(SPREADS).map(([k,s])=>`
+      <button class="ta-spreadcard" data-k="${k}">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:var(--font-serif);font-size:17px;color:var(--color-text-primary);">${s.name}</span>
+          <span class="ta-pill" style="background:var(--color-background-secondary);color:var(--color-text-secondary);">${s.count}枚</span>
+        </div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin-top:4px;">${s.desc}</div>
+      </button>`).join('');
+    mount().innerHTML = `
+      <button class="ta-btn" id="ta-back" style="border:none;padding:6px 0;background:none;color:var(--color-text-secondary);"><i class="ti ti-arrow-left" aria-hidden="true"></i>戻る</button>
+      <h3 style="font-family:var(--font-serif);font-weight:500;text-align:center;margin:.3rem 0 1rem;">問いを立て、スプレッドを選ぶ</h3>
+      <div style="margin-bottom:1.2rem;">
+        <label style="font-size:13px;color:var(--color-text-secondary);">相談ごと・知りたいこと（任意）</label>
+        <textarea id="ta-q" rows="2" placeholder="例：今の仕事を続けるべきか" style="width:100%;margin-top:6px;padding:10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);resize:vertical;box-sizing:border-box;"></textarea>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">${cards}</div>`;
+    document.getElementById('ta-back').onclick = screenTop;
+    mount().querySelectorAll('.ta-spreadcard').forEach(b=>{
+      b.onclick = ()=>{ state.spread=b.dataset.k; state.question=document.getElementById('ta-q').value.trim(); screenShuffle(); };
+    });
+  }
+
+  function screenShuffle(){
+    mount().innerHTML = `
+      <div style="text-align:center;padding:1rem 0 2rem;">
+        <h3 style="font-family:var(--font-serif);font-weight:500;margin:0 0 1.4rem;">問いに集中して…</h3>
+        <div id="ta-fan" style="position:relative;height:170px;display:flex;justify-content:center;align-items:center;"></div>
+        <p class="ta-sub" id="ta-shuf-msg" style="margin-top:1.4rem;">カードをシャッフルしています</p>
+        <button class="ta-btn ta-btn-primary" id="ta-cut" style="margin-top:1.4rem;display:none;"><i class="ti ti-scissors" aria-hidden="true"></i>デッキをカットする</button>
+      </div>`;
+    const fan = document.getElementById('ta-fan');
+    for(let i=0;i<5;i++){ const c=document.createElement('div'); c.className='ta-card ta-shuffling'; c.style.cssText=`width:70px;height:112px;margin:0 -22px;animation-delay:${i*0.08}s;background:#1a1533;border:1px solid #3a2f66;border-radius:9px;display:flex;align-items:center;justify-content:center;`; c.innerHTML=cardBack(); fan.appendChild(c); }
+    setTimeout(()=>{ fan.querySelectorAll('.ta-shuffling').forEach((c,i)=>{ c.classList.remove('ta-shuffling'); c.style.transition='transform .4s'; c.style.transform=`rotate(${(i-2)*9}deg)`; }); document.getElementById('ta-shuf-msg').textContent='準備ができました。デッキをカットしてください'; document.getElementById('ta-cut').style.display='inline-flex'; },1900);
+    document.getElementById('ta-cut').onclick = screenDraw;
+  }
+
+  function screenDraw(){
+    const sp=SPREADS[state.spread];
+    state._deck = shuffle(DECK).map(c=>({card:c, reversed:Math.random()<0.5}));
+    mount().innerHTML = `
+      <div style="text-align:center;">
+        <h3 style="font-family:var(--font-serif);font-weight:500;margin:.2rem 0 .3rem;">22枚から${sp.count}枚を選ぶ</h3>
+        <p class="ta-sub">気になるカードをタップ　／　あと <b id="ta-remain">${sp.count}</b> 枚</p>
+      </div>
+      <div id="ta-deck" style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 0;margin-top:1.2rem;padding:0 4px;"></div>`;
+    const deckEl=document.getElementById('ta-deck');
+    state._deck.forEach((d,i)=>{ const c=document.createElement('div'); c.className='ta-card ta-deckcard'; c.style.marginLeft = i%11===0 ? '0' : '-14px'; c.innerHTML=cardBack(20); c.onclick=()=>pick(i,c); deckEl.appendChild(c); });
+    state.picks=[];
+  }
+
+  function pick(i,el){
+    const sp=SPREADS[state.spread];
+    if(state.picks.length>=sp.count) return;
+    el.classList.add('picked');
+    state.picks.push(state._deck[i]);
+    const remain=sp.count-state.picks.length;
+    document.getElementById('ta-remain').textContent=remain;
+    if(remain===0){ setTimeout(screenReading,450); }
+  }
+
+  function screenReading(){
+    const sp=SPREADS[state.spread];
+    const sections=buildSections().map((s,i)=>`<div class="ta-sec"><div class="ta-sec-h"><i class="ti ${s.icon}" aria-hidden="true"></i>${s.title}</div><div class="ta-sec-b">${s.body}</div></div>`).join('');
+    mount().innerHTML = `
+      <div style="text-align:center;margin-bottom:.4rem;">
+        <h3 style="font-family:var(--font-serif);font-weight:500;margin:.2rem 0;">${sp.name}の結果</h3>
+        ${state.question?`<p class="ta-sub">相談：${esc(state.question)}</p>`:''}
+      </div>
+      ${layoutSpread()}
+      ${celticGuide()}
+      <div class="ta-synth">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><i class="ti ti-book" style="font-size:18px;color:#a98ad4;" aria-hidden="true"></i><span style="font-family:var(--font-serif);font-size:17px;color:var(--color-text-primary);">あなたへのリーディング</span></div>
+        ${sections}
+      </div>
+      <div style="font-family:var(--font-serif);font-size:15px;color:var(--color-text-primary);margin:1.4rem 0 .4rem;">各カードの意味（色＝吉凶 / 矢印＝正逆）</div>
+      <div>${detailList()}</div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:1.2rem;flex-wrap:wrap;">
+        <button class="ta-btn ta-btn-primary" id="ta-save"><i class="ti ti-bookmark" aria-hidden="true"></i>この結果を保存</button>
+        <button class="ta-btn" id="ta-again"><i class="ti ti-refresh" aria-hidden="true"></i>もう一度占う</button>
+      </div>`;
+    state.picks.forEach((p,i)=>{ setTimeout(()=>{ const f=document.getElementById('flip-'+i); if(f)f.classList.add('flipped'); }, 250+i*180); });
+    document.getElementById('ta-again').onclick=screenSpread;
+    const saveBtn=document.getElementById('ta-save');
+    saveBtn.onclick=()=>{ saveReading(); saveBtn.innerHTML='<i class="ti ti-check" aria-hidden="true"></i>保存しました'; saveBtn.disabled=true; };
+  }
+
+  const KEY='tarot_readings_v1';
+  function load(){ try{return JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){return [];} }
+  function save(arr){ try{localStorage.setItem(KEY,JSON.stringify(arr));}catch(e){} }
+  function saveReading(){ const arr=load(); arr.unshift({ date:new Date().toISOString(), spread:state.spread, question:state.question, cards:state.picks.map((p,i)=>({id:p.card.id, reversed:p.reversed, position:SPREADS[state.spread].positions[i]})) }); save(arr.slice(0,50)); }
+
+  function screenHistory(){
+    const arr=load();
+    const fmt=d=>{const t=new Date(d);return `${t.getFullYear()}/${String(t.getMonth()+1).padStart(2,'0')}/${String(t.getDate()).padStart(2,'0')} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;};
+    const items = arr.length? arr.map((r,idx)=>{
+      const sp=SPREADS[r.spread]||{name:r.spread};
+      const cs=r.cards.map(c=>{const card=DECK.find(d=>d.id===c.id);return `<span class="ta-pill" style="background:var(--color-background-secondary);color:var(--color-text-secondary);margin:2px;">${card?card.n:''}${c.reversed?'(逆)':''}</span>`;}).join('');
+      return `<div style="padding:14px;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><span style="font-family:var(--font-serif);font-size:15px;">${sp.name}</span><span style="font-size:12px;color:var(--color-text-tertiary);">${fmt(r.date)}</span></div>
+        ${r.question?`<div style="font-size:13px;color:var(--color-text-secondary);margin:6px 0;">相談：${esc(r.question)}</div>`:''}
+        <div style="margin-top:6px;">${cs}</div>
+        <button class="ta-btn ta-del" data-i="${idx}" style="border:none;background:none;color:var(--color-text-danger);font-size:13px;padding:6px 0;margin-top:4px;"><i class="ti ti-trash" aria-hidden="true"></i>削除</button>
+      </div>`;
+    }).join('') : `<p class="ta-sub" style="padding:2rem 0;">保存された占いはまだありません</p>`;
+    mount().innerHTML = `
+      <button class="ta-btn" id="ta-back" style="border:none;padding:6px 0;background:none;color:var(--color-text-secondary);"><i class="ti ti-arrow-left" aria-hidden="true"></i>戻る</button>
+      <h3 style="font-family:var(--font-serif);font-weight:500;text-align:center;margin:.3rem 0 1.2rem;">占いの履歴</h3>
+      ${items}`;
+    document.getElementById('ta-back').onclick=screenTop;
+    mount().querySelectorAll('.ta-del').forEach(b=>{ b.onclick=()=>{ const a=load(); a.splice(+b.dataset.i,1); save(a); screenHistory(); }; });
+  }
+
+  screenTop();
+})();
+</script>
+</body>
+</html>
