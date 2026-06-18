@@ -106,6 +106,8 @@
 (function(){
   const mount = () => document.getElementById('tarot-screen');
 
+  const QR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 33" shape-rendering="crispEdges" width="100%" height="100%" style="display:block"><path fill="#ffffff" d="M0 0h33v33H0z"/><path stroke="#000000" d="M2 2.5h7m5 0h1m2 0h1m1 0h4m1 0h7M2 3.5h1m5 0h1m1 0h3m2 0h1m1 0h6m1 0h1m5 0h1M2 4.5h1m1 0h3m1 0h1m3 0h3m1 0h1m1 0h1m3 0h1m1 0h1m1 0h3m1 0h1M2 5.5h1m1 0h3m1 0h1m2 0h2m3 0h2m2 0h2m2 0h1m1 0h3m1 0h1M2 6.5h1m1 0h3m1 0h1m1 0h1m1 0h3m2 0h1m2 0h2m2 0h1m1 0h3m1 0h1M2 7.5h1m5 0h1m5 0h2m1 0h1m2 0h2m2 0h1m5 0h1M2 8.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M14 9.5h2m2 0h2m1 0h2M2 10.5h1m1 0h1m1 0h1m1 0h1m2 0h1m1 0h1m2 0h4m6 0h1m2 0h1M2 11.5h1m2 0h1m1 0h1m2 0h1m1 0h2m8 0h1m1 0h1m2 0h1m2 0h1M2 12.5h1m1 0h5m1 0h1m3 0h2m2 0h1m1 0h1m2 0h3m2 0h3M2 13.5h5m10 0h7m2 0h1m2 0h1M4 14.5h3m1 0h1m1 0h3m4 0h3m2 0h1m1 0h1m2 0h1m1 0h2M5 15.5h1m3 0h1m1 0h1m1 0h1m1 0h1m2 0h3m1 0h3m2 0h1m2 0h1M2 16.5h1m1 0h2m1 0h3m2 0h1m1 0h1m1 0h1m2 0h1m2 0h2m3 0h1m1 0h2M2 17.5h1m6 0h1m3 0h7m5 0h1m1 0h1m1 0h1M3 18.5h2m1 0h1m1 0h1m3 0h2m2 0h1m1 0h2m2 0h4m1 0h1m1 0h2M6 19.5h2m1 0h2m5 0h1m1 0h2m2 0h3m2 0h2m1 0h1M2 20.5h1m1 0h1m2 0h3m1 0h2m2 0h1m8 0h3m2 0h2M3 21.5h5m1 0h2m2 0h1m5 0h4m2 0h1m1 0h1m1 0h1M2 22.5h1m2 0h1m2 0h5m1 0h1m3 0h9M10 23.5h4m1 0h1m2 0h1m2 0h2m3 0h1m1 0h3M2 24.5h7m5 0h1m1 0h1m1 0h2m1 0h2m1 0h1m1 0h2m1 0h2M2 25.5h1m5 0h1m3 0h1m2 0h2m2 0h1m1 0h2m3 0h2m1 0h2M2 26.5h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m2 0h1m2 0h5m2 0h2M2 27.5h1m1 0h3m1 0h1m3 0h1m1 0h1m1 0h1m1 0h4m3 0h2m1 0h3M2 28.5h1m1 0h3m1 0h1m1 0h2m3 0h2m2 0h1m2 0h2m1 0h3m2 0h1M2 29.5h1m5 0h1m2 0h1m1 0h1m3 0h3m2 0h2m1 0h1m3 0h1M2 30.5h7m1 0h5m3 0h2m1 0h2m1 0h4m1 0h2"/></svg>`;
+
   const DECK = [
     {id:0,n:"愚者",e:"The Fool",rn:"0",ic:"ti-mountain",mo:"mountain",col:"#6f9e6a",t:1,kw:["可能性","自由","無垢"],up:"新しいことへ思いきって飛び込むとき。失敗を恐れず始めれば道は開けます。",rev:"準備不足のまま動くと空回りしがち。今は計画を固める段階です。",aU:"恐れず最初の一歩を踏み出す",aR:"動く前に足場を固める"},
     {id:1,n:"魔術師",e:"The Magician",rn:"I",ic:"ti-wand",mo:"stars",col:"#c2a13a",t:1,kw:["創造","意志","才能"],up:"あなたには実現する力が揃っています。自分から動けば結果がついてきます。",rev:"口先だけ・準備不足になりがち。やると決めたら手を動かして。",aU:"自分から主体的に動く",aR:"言葉より実際の準備を整える"},
@@ -322,6 +324,12 @@
           <button class="ta-btn ta-btn-primary" id="ta-start"><i class="ti ti-cards" aria-hidden="true"></i>占いを始める</button>
           <button class="ta-btn" id="ta-history"><i class="ti ti-history" aria-hidden="true"></i>履歴を見る</button>
         </div>
+        <div style="margin:2.4rem auto 0;max-width:260px;background:#ffffff;border-radius:var(--border-radius-lg);padding:16px;text-align:center;box-shadow:0 4px 18px rgba(0,0,0,.25);">
+          <div style="width:160px;height:160px;margin:0 auto;">${QR_SVG}</div>
+          <div style="font-size:12px;color:#3a3a3a;margin-top:10px;"><i class="ti ti-qrcode" aria-hidden="true"></i> スマホのカメラで読み取ってアクセス</div>
+          <div style="font-size:11px;color:#777777;word-break:break-all;margin-top:2px;">tarot-app-beta-five.vercel.app</div>
+        </div>
+        <p class="ta-sub" style="margin-top:10px;">このQRコードで友だちにも共有できます</p>
       </div>`;
     document.getElementById('ta-start').onclick = screenSpread;
     document.getElementById('ta-history').onclick = screenHistory;
