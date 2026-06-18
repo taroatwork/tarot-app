@@ -241,18 +241,18 @@
       <div class="ta-face">${artHTML(card,reversed,w)}</div>
     </div>`;
   }
-  function stateChip(p){ const ti=toneInfo(p); return `<div style="margin-top:6px;display:flex;flex-direction:column;gap:3px;align-items:center;">
+  function stateChip(p,i){ const ti=toneInfo(p); return `<div id="chip-${i}" style="opacity:0;transition:opacity .5s ease;margin-top:6px;display:flex;flex-direction:column;gap:3px;align-items:center;">
     <span class="ta-pill" style="background:var(--color-background-secondary);color:var(--color-text-secondary);"><i class="ti ti-arrow-${p.reversed?'down':'up'}" aria-hidden="true"></i>${p.reversed?'逆位置':'正位置'}</span>
     <span class="ta-pill" style="background:${ti.bg};color:${ti.fg};"><i class="ti ${ti.ic}" aria-hidden="true"></i>${ti.lab}</span></div>`; }
 
   function layoutSpread(){
     const P=state.picks, sp=SPREADS[state.spread];
     if(state.spread==='one'){
-      return `<div style="display:flex;justify-content:center;padding:1rem 0;"><div style="text-align:center;"><div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;">${esc(sp.positions[0])}</div>${flipCard(0,P[0].card,P[0].reversed,138)}${stateChip(P[0])}</div></div>`;
+      return `<div style="display:flex;justify-content:center;padding:1rem 0;"><div style="text-align:center;"><div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;">${esc(sp.positions[0])}</div>${flipCard(0,P[0].card,P[0].reversed,138)}${stateChip(P[0],0)}</div></div>`;
     }
     if(state.spread==='three'){
       return `<div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;padding:1rem 0;">`+
-        P.map((p,i)=>`<div style="text-align:center;"><div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;">${esc(sp.positions[i])}</div>${flipCard(i,p.card,p.reversed,108)}${stateChip(p)}</div>`).join('')+`</div>`;
+        P.map((p,i)=>`<div style="text-align:center;"><div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;">${esc(sp.positions[i])}</div>${flipCard(i,p.card,p.reversed,108)}${stateChip(p,i)}</div>`).join('')+`</div>`;
     }
     const w=72,h=Math.round(w*1.58),ux=w+40,uy=h+12;
     const crossOff=Math.round((4*h+3*12 - (3*h+2*12))/2);
@@ -264,7 +264,7 @@
     P.forEach((p,i)=>{ const s=slots[i], ti=toneInfo(p);
       inner+=`<div style="position:absolute;left:${s.x}px;top:${s.y}px;width:${w}px;height:${h}px;z-index:${s.rot?5:2};${s.rot?'transform:rotate(90deg);':''}">
         ${flipCard(i,p.card,p.reversed,w)}
-        <div class="ta-badge" style="background:${ti.bar};${s.rot?'transform:rotate(-90deg);':''}">${i+1}</div>
+        <div id="badge-${i}" class="ta-badge" style="background:${ti.bar};opacity:0;transition:opacity .5s ease;${s.rot?'transform:rotate(-90deg);':''}">${i+1}</div>
       </div>`;
     });
     const legend=`<div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:14px;color:var(--color-text-secondary);">
@@ -472,7 +472,7 @@
       </div>`;
     scaleCeltic();
     const step = state.picks.length<=3 ? 950 : 600;
-    state.picks.forEach((p,i)=>{ setTimeout(()=>{ const f=document.getElementById('flip-'+i); if(f){ Sound.flip(); f.classList.add('flipped'); } }, 700+i*step); });
+    state.picks.forEach((p,i)=>{ setTimeout(()=>{ const f=document.getElementById('flip-'+i); if(f){ Sound.flip(); f.classList.add('flipped'); } setTimeout(()=>{ const b=document.getElementById('badge-'+i); if(b) b.style.opacity='1'; const ch=document.getElementById('chip-'+i); if(ch) ch.style.opacity='1'; }, 550); }, 700+i*step); });
     const showRev=(id,disp)=>{ const el=document.getElementById(id); if(!el) return; el.style.display=disp; requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show'))); };
     const revealAt = 700 + (state.picks.length-1)*step + 1350 + 300;
     setTimeout(()=>{
