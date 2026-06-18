@@ -56,11 +56,9 @@
 </head>
 <body>
 <div class="page">
-<div id="tarot-app" style="font-family: var(--font-sans);">
+<div id="tarot-app" style="font-family: var(--font-sans);position:relative;">
   <h2 class="sr-only">大アルカナ22枚から選ぶタロットアプリ。スプレッド本来の配置でカードを並べ、各カードの吉凶を色分けし、正逆を視覚化し、質問への結論と具体的な助言をセクションごとに解説します。</h2>
-  <div style="display:flex;justify-content:flex-end;margin-bottom:-6px;">
-    <button id="ta-sound" aria-label="サウンドのオン・オフ" style="background:none;border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:16px;line-height:1;"><i class="ti ti-volume" aria-hidden="true"></i></button>
-  </div>
+  <button id="ta-sound" aria-label="サウンドのオン・オフ" style="position:absolute;top:28px;right:0;z-index:10;background:rgba(20,16,42,.35);border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:16px;line-height:1;"><i class="ti ti-volume" aria-hidden="true"></i></button>
   <div id="tarot-screen"></div>
 </div>
 
