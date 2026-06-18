@@ -201,10 +201,10 @@
     }
     const w=72,h=Math.round(w*1.58),ux=w+40,uy=h+12;
     const crossOff=Math.round((4*h+3*12 - (3*h+2*12))/2);
-    const col0=0,col1=ux,col2=ux*2,col3=ux*3+22;
+    const pad=12;const col0=pad,col1=ux+pad,col2=ux*2+pad,col3=ux*3+22+pad;
     const r0=crossOff,r1=crossOff+uy,r2=crossOff+uy*2;
     const slots=[{x:col1,y:r1,rot:false},{x:col1,y:r1,rot:true},{x:col1,y:r2,rot:false},{x:col0,y:r1,rot:false},{x:col1,y:r0,rot:false},{x:col2,y:r1,rot:false},{x:col3,y:uy*3,rot:false},{x:col3,y:uy*2,rot:false},{x:col3,y:uy*1,rot:false},{x:col3,y:0,rot:false}];
-    const cw=col3+w, ch=4*h+3*12;
+    const cw=col3+w+pad, ch=4*h+3*12;
     let inner='';
     P.forEach((p,i)=>{ const s=slots[i], ti=toneInfo(p);
       inner+=`<div style="position:absolute;left:${s.x}px;top:${s.y}px;width:${w}px;height:${h}px;z-index:${s.rot?5:2};${s.rot?'transform:rotate(90deg);':''}">
@@ -217,7 +217,9 @@
       <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ba7517;vertical-align:middle;margin-right:4px;"></span>注意・課題</span>
       <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#888780;vertical-align:middle;margin-right:4px;"></span>中立</span>
       <span><i class="ti ti-arrow-down" aria-hidden="true"></i> 逆位置</span></div>`;
-    return `<div style="overflow-x:auto;padding:1rem 0 .2rem;"><div style="position:relative;width:${cw}px;height:${ch}px;margin:0 auto;">${inner}</div></div>${legend}`;
+    return `<div id="ta-celtic-outer" style="position:relative;width:100%;overflow:hidden;">
+      <div id="ta-celtic-inner" style="position:absolute;left:50%;top:16px;width:${cw}px;height:${ch}px;transform:translateX(-50%);transform-origin:top center;">${inner}</div>
+    </div>${legend}`;
   }
 
   function celticGuide(){
@@ -232,6 +234,17 @@
         <div style="font-size:13px;color:var(--color-text-secondary);margin-top:4px;line-height:1.6;">時間の流れとあなたの内面。下から上へ⑦自分→⑧環境→⑨希望と不安→⑩結末、と読み上げます。</div>
       </div></div>`;
   }
+
+  function scaleCeltic(){
+    if(state.spread!=='celtic') return;
+    const inner=document.getElementById('ta-celtic-inner');
+    const outer=document.getElementById('ta-celtic-outer');
+    if(!inner||!outer) return;
+    const scale=Math.min(1, outer.clientWidth/inner.offsetWidth);
+    inner.style.transform=`translateX(-50%) scale(${scale})`;
+    outer.style.height=(inner.offsetHeight*scale+24)+'px';
+  }
+  window.addEventListener('resize', scaleCeltic);
 
   function leaning(){
     let sc=0; state.picks.forEach(p=>{ sc += eff(p); });
@@ -396,6 +409,7 @@
         <button class="ta-btn ta-btn-primary" id="ta-save"><i class="ti ti-bookmark" aria-hidden="true"></i>この結果を保存</button>
         <button class="ta-btn" id="ta-again"><i class="ti ti-refresh" aria-hidden="true"></i>もう一度占う</button>
       </div>`;
+    scaleCeltic();
     state.picks.forEach((p,i)=>{ setTimeout(()=>{ const f=document.getElementById('flip-'+i); if(f)f.classList.add('flipped'); }, 250+i*180); });
     document.getElementById('ta-again').onclick=screenSpread;
     const saveBtn=document.getElementById('ta-save');
