@@ -104,6 +104,9 @@
   #tarot-app .ta-spreadcard:hover{border-color:#7f77dd;background:var(--color-background-secondary);}
   #tarot-app .ta-pill{display:inline-flex;align-items:center;gap:3px;font-size:12px;padding:3px 9px;border-radius:999px;}
   #tarot-app .ta-synth{padding:18px;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);margin:8px 0 16px;}
+  #tarot-app .ta-reveal{opacity:0;transform:translateY(12px);transition:opacity .8s ease, transform .8s ease;pointer-events:none;}
+  #tarot-app .ta-reveal.show{opacity:1;transform:none;pointer-events:auto;}
+  #tarot-app .ta-hint{text-align:center;color:var(--color-text-secondary);font-size:14px;margin:1.4rem 0;font-family:var(--font-serif);letter-spacing:.04em;}
   #tarot-app .ta-sec{padding:12px 0;}
   #tarot-app .ta-sec+.ta-sec{border-top:0.5px solid var(--color-border-tertiary);}
   #tarot-app .ta-sec-h{font-family:var(--font-serif);font-size:16px;display:flex;align-items:center;gap:8px;color:var(--color-text-primary);margin-bottom:6px;}
@@ -450,19 +453,30 @@
       </div>
       ${layoutSpread()}
       ${celticGuide()}
-      <div class="ta-synth">
+      <div id="ta-hint" class="ta-hint">カードを1枚ずつめくっています…</div>
+      <div id="ta-rev-1" class="ta-reveal" style="display:none;"><div class="ta-synth">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><i class="ti ti-book" style="font-size:18px;color:#a98ad4;" aria-hidden="true"></i><span style="font-family:var(--font-serif);font-size:17px;color:var(--color-text-primary);">あなたへのリーディング</span></div>
         ${sections}
+      </div></div>
+      <div id="ta-rev-2" class="ta-reveal" style="display:none;">
+        <div style="font-family:var(--font-serif);font-size:15px;color:var(--color-text-primary);margin:1.4rem 0 .4rem;">各カードの意味（色＝吉凶 / 矢印＝正逆）</div>
+        <div>${detailList()}</div>
       </div>
-      <div style="font-family:var(--font-serif);font-size:15px;color:var(--color-text-primary);margin:1.4rem 0 .4rem;">各カードの意味（色＝吉凶 / 矢印＝正逆）</div>
-      <div>${detailList()}</div>
-      <div style="display:flex;gap:10px;justify-content:center;margin-top:1.2rem;flex-wrap:wrap;">
+      <div id="ta-rev-3" class="ta-reveal" style="display:none;gap:10px;justify-content:center;margin-top:1.2rem;flex-wrap:wrap;">
         <button class="ta-btn ta-btn-primary" id="ta-save"><i class="ti ti-bookmark" aria-hidden="true"></i>この結果を保存</button>
         <button class="ta-btn" id="ta-again"><i class="ti ti-refresh" aria-hidden="true"></i>もう一度占う</button>
       </div>`;
     scaleCeltic();
     const step = state.picks.length<=3 ? 950 : 600;
     state.picks.forEach((p,i)=>{ setTimeout(()=>{ const f=document.getElementById('flip-'+i); if(f){ Sound.flip(); f.classList.add('flipped'); } }, 700+i*step); });
+    const showRev=(id,disp)=>{ const el=document.getElementById(id); if(!el) return; el.style.display=disp; requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show'))); };
+    const revealAt = 700 + (state.picks.length-1)*step + 1350 + 300;
+    setTimeout(()=>{
+      const hint=document.getElementById('ta-hint'); if(hint){ hint.textContent='カードが読み解かれていきます…'; setTimeout(()=>{ if(hint) hint.style.display='none'; }, 700); }
+      showRev('ta-rev-1','block');
+      setTimeout(()=>showRev('ta-rev-2','block'), 600);
+      setTimeout(()=>showRev('ta-rev-3','flex'), 1200);
+    }, revealAt);
     document.getElementById('ta-again').onclick=screenSpread;
     const saveBtn=document.getElementById('ta-save');
     saveBtn.onclick=()=>{ saveReading(); saveBtn.innerHTML='<i class="ti ti-check" aria-hidden="true"></i>保存しました'; saveBtn.disabled=true; };
