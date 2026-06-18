@@ -199,7 +199,7 @@
       return `<div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;padding:1rem 0;">`+
         P.map((p,i)=>`<div style="text-align:center;"><div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;">${esc(sp.positions[i])}</div>${flipCard(i,p.card,p.reversed,108)}${stateChip(p)}</div>`).join('')+`</div>`;
     }
-    const w=72,h=Math.round(w*1.58),ux=w+16,uy=h+12;
+    const w=72,h=Math.round(w*1.58),ux=w+40,uy=h+12;
     const crossOff=Math.round((4*h+3*12 - (3*h+2*12))/2);
     const col0=0,col1=ux,col2=ux*2,col3=ux*3+22;
     const r0=crossOff,r1=crossOff+uy,r2=crossOff+uy*2;
