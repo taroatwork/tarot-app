@@ -65,6 +65,7 @@
 </div>
 
 <p class="site-foot">大アルカナ22枚 タロット・リーディング　/　ブラウザ完結・データはお使いの端末内にのみ保存されます<br>※エンターテインメント目的のアプリです</p>
+<div id="ta-qr-block" style="text-align:center;margin-top:14px;display:none;"></div>
 </div>
 
 <style>
@@ -175,6 +176,18 @@
       shuffle(){ if(!enabled) return; for(let i=0;i<16;i++){ setTimeout(()=>burst(0.05,{type:'bandpass',freq:1400+Math.random()*1600,q:1.3,gain:0.16,attack:0.002,release:0.045}), i*95); } }
     };
   })();
+
+  function renderQR(){
+    const el=document.getElementById('ta-qr-block'); if(!el) return;
+    el.innerHTML = `
+      <div style="display:inline-block;background:#ffffff;border-radius:10px;padding:9px;"><div style="width:132px;height:132px;">${QR_SVG}</div></div>
+      <div style="font-size:13px;line-height:1.8;color:var(--color-text-secondary);margin-top:12px;">
+        <div><i class="ti ti-qrcode" aria-hidden="true"></i> スマホのカメラで読み取ってアクセス</div>
+        <div style="color:var(--color-text-tertiary);">tarot-app-beta-five.vercel.app</div>
+        <div>このQRコードで友だちにも共有できます</div>
+      </div>`;
+  }
+  function qr(v){ const el=document.getElementById('ta-qr-block'); if(el) el.style.display = v ? 'block' : 'none'; }
 
   function initSound(){
     const btn=document.getElementById('ta-sound'); if(!btn) return;
@@ -366,20 +379,14 @@
           <button class="ta-cardbtn" id="ta-start"><span class="ta-cardbtn-card"><i class="ti ti-sparkles" aria-hidden="true"></i></span><span class="ta-cardbtn-label">占いを始める</span></button>
           <button class="ta-cardbtn" id="ta-history"><span class="ta-cardbtn-card"><i class="ti ti-history" aria-hidden="true"></i></span><span class="ta-cardbtn-label">履歴を見る</span></button>
         </div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin:2.6rem auto 0;max-width:420px;">
-          <div style="flex:0 0 auto;width:74px;height:74px;background:#ffffff;border-radius:6px;padding:5px;">${QR_SVG}</div>
-          <div style="flex:1;min-width:0;text-align:left;font-size:13px;line-height:1.7;color:var(--color-text-secondary);">
-            <div><i class="ti ti-qrcode" aria-hidden="true"></i> スマホのカメラで読み取ってアクセス</div>
-            <div style="color:var(--color-text-tertiary);word-break:break-all;">tarot-app-beta-five.vercel.app</div>
-            <div>このQRコードで友だちにも共有できます</div>
-          </div>
-        </div>
       </div>`;
+    qr(true);
     document.getElementById('ta-start').onclick = ()=>{ Sound.resume(); screenSpread(); };
     document.getElementById('ta-history').onclick = ()=>{ Sound.resume(); screenHistory(); };
   }
 
   function screenSpread(){
+    qr(false);
     state = {spread:null, question:"", picks:[]};
     const cards = Object.entries(SPREADS).map(([k,s])=>`
       <button class="ta-spreadcard" data-k="${k}">
@@ -487,6 +494,7 @@
   function saveReading(){ const arr=load(); arr.unshift({ date:new Date().toISOString(), spread:state.spread, question:state.question, cards:state.picks.map((p,i)=>({id:p.card.id, reversed:p.reversed, position:SPREADS[state.spread].positions[i]})) }); save(arr.slice(0,50)); }
 
   function screenHistory(){
+    qr(false);
     const arr=load();
     const fmt=d=>{const t=new Date(d);return `${t.getFullYear()}/${String(t.getMonth()+1).padStart(2,'0')}/${String(t.getDate()).padStart(2,'0')} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;};
     const items = arr.length? arr.map((r,idx)=>{
@@ -508,6 +516,7 @@
   }
 
   initSound();
+  renderQR();
   screenTop();
 })();
 </script>
