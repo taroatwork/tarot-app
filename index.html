@@ -324,12 +324,14 @@
           <button class="ta-btn ta-btn-primary" id="ta-start"><i class="ti ti-cards" aria-hidden="true"></i>占いを始める</button>
           <button class="ta-btn" id="ta-history"><i class="ti ti-history" aria-hidden="true"></i>履歴を見る</button>
         </div>
-        <div style="margin:2.4rem auto 0;max-width:260px;background:#ffffff;border-radius:var(--border-radius-lg);padding:16px;text-align:center;box-shadow:0 4px 18px rgba(0,0,0,.25);">
-          <div style="width:160px;height:160px;margin:0 auto;">${QR_SVG}</div>
-          <div style="font-size:12px;color:#3a3a3a;margin-top:10px;"><i class="ti ti-qrcode" aria-hidden="true"></i> スマホのカメラで読み取ってアクセス</div>
-          <div style="font-size:11px;color:#777777;word-break:break-all;margin-top:2px;">tarot-app-beta-five.vercel.app</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin:2.6rem auto 0;max-width:300px;">
+          <div style="flex:0 0 auto;width:74px;height:74px;background:#ffffff;border-radius:6px;padding:5px;">${QR_SVG}</div>
+          <div style="text-align:left;font-size:11px;line-height:1.6;color:var(--color-text-secondary);">
+            <div><i class="ti ti-qrcode" aria-hidden="true"></i> スマホのカメラで読み取ってアクセス</div>
+            <div style="color:var(--color-text-tertiary);word-break:break-all;">tarot-app-beta-five.vercel.app</div>
+            <div>このQRコードで友だちにも共有できます</div>
+          </div>
         </div>
-        <p class="ta-sub" style="margin-top:10px;">このQRコードで友だちにも共有できます</p>
       </div>`;
     document.getElementById('ta-start').onclick = screenSpread;
     document.getElementById('ta-history').onclick = screenHistory;
