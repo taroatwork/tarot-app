@@ -58,6 +58,9 @@
 <div class="page">
 <div id="tarot-app" style="font-family: var(--font-sans);">
   <h2 class="sr-only">大アルカナ22枚から選ぶタロットアプリ。スプレッド本来の配置でカードを並べ、各カードの吉凶を色分けし、正逆を視覚化し、質問への結論と具体的な助言をセクションごとに解説します。</h2>
+  <div style="display:flex;justify-content:flex-end;margin-bottom:-6px;">
+    <button id="ta-sound" aria-label="サウンドのオン・オフ" style="background:none;border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:16px;line-height:1;"><i class="ti ti-volume" aria-hidden="true"></i></button>
+  </div>
   <div id="tarot-screen"></div>
 </div>
 
@@ -80,7 +83,7 @@
   #tarot-app .ta-title{font-family:var(--font-serif);font-size:26px;font-weight:500;color:var(--color-text-primary);text-align:center;margin:0;letter-spacing:.04em;}
   #tarot-app .ta-sub{font-size:14px;color:var(--color-text-secondary);text-align:center;margin:.4rem 0 0;}
   #tarot-app .ta-card{position:relative;border-radius:9px;}
-  #tarot-app .ta-flip{position:relative;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.4,.1,.2,1);}
+  #tarot-app .ta-flip{position:relative;transform-style:preserve-3d;transition:transform 1.35s cubic-bezier(.2,.65,.2,1);}
   #tarot-app .ta-flip.flipped{transform:rotateY(180deg);}
   #tarot-app .ta-face,#tarot-app .ta-back{position:absolute;inset:0;border-radius:9px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;}
   #tarot-app .ta-back{background:#1a1533;border:1px solid #3a2f66;display:flex;align-items:center;justify-content:center;}
@@ -148,6 +151,35 @@
     celtic:{name:"ケルト十字", count:10, positions:["現状","障害","根底にあるもの","過去","目標・可能性","近い未来","あなた自身","周囲・環境","希望と不安","結末"], desc:"十字と杖の配置で多角的に読む",
             posDesc:["今あなたが置かれている状況","行く手をはばむ／後押しする力","状況の根っこ・無意識の土台","ここに至るまでの流れ","目指せる到達点・理想","すぐ先に訪れる展開","あなたの本心・スタンス","周囲の人や環境の影響","心の中の期待と恐れ","最終的に行き着く先"]}
   };
+
+  const Sound = (function(){
+    let ctx, enabled=true;
+    function ac(){ if(!ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; ctx=new AC(); } if(ctx.state==='suspended') ctx.resume(); return ctx; }
+    function burst(dur, o){ o=o||{}; const c=ac(); if(!c) return; const sr=c.sampleRate, len=Math.max(1,Math.floor(sr*dur));
+      const buf=c.createBuffer(1,len,sr), d=buf.getChannelData(0);
+      for(let i=0;i<len;i++){ d[i]=(Math.random()*2-1); }
+      const src=c.createBufferSource(); src.buffer=buf;
+      const filt=c.createBiquadFilter(); filt.type=o.type||'bandpass'; filt.frequency.value=o.freq||1500; filt.Q.value=o.q||1;
+      const g=c.createGain(); const now=c.currentTime; const atk=o.attack||0.004; const rel=o.release||dur;
+      g.gain.setValueAtTime(0,now); g.gain.linearRampToValueAtTime(o.gain||0.25, now+atk); g.gain.exponentialRampToValueAtTime(0.0001, now+rel);
+      src.connect(filt); filt.connect(g); g.connect(c.destination); src.start(now); src.stop(now+dur+0.03);
+    }
+    return {
+      enable(v){ enabled=v; }, isOn(){ return enabled; }, resume(){ try{ ac(); }catch(e){} },
+      flip(){ if(!enabled) return; burst(0.22,{type:'highpass',freq:1700,q:0.7,gain:0.26,attack:0.005,release:0.2}); setTimeout(()=>burst(0.05,{type:'bandpass',freq:2600,q:1.4,gain:0.18,attack:0.002,release:0.045}),150); },
+      pick(){ if(!enabled) return; burst(0.08,{type:'highpass',freq:3000,q:0.7,gain:0.16,attack:0.002,release:0.07}); },
+      deal(){ if(!enabled) return; for(let i=0;i<6;i++){ setTimeout(()=>burst(0.07,{type:'bandpass',freq:2200+Math.random()*900,q:1,gain:0.15,attack:0.002,release:0.06}), i*80); } },
+      shuffle(){ if(!enabled) return; for(let i=0;i<16;i++){ setTimeout(()=>burst(0.05,{type:'bandpass',freq:1400+Math.random()*1600,q:1.3,gain:0.16,attack:0.002,release:0.045}), i*95); } }
+    };
+  })();
+
+  function initSound(){
+    const btn=document.getElementById('ta-sound'); if(!btn) return;
+    Sound.enable(localStorage.getItem('tarot_sound')!=='off');
+    const paint=()=>{ btn.innerHTML = Sound.isOn() ? '<i class="ti ti-volume" aria-hidden="true"></i>' : '<i class="ti ti-volume-off" aria-hidden="true"></i>'; };
+    paint();
+    btn.onclick=()=>{ Sound.enable(!Sound.isOn()); localStorage.setItem('tarot_sound', Sound.isOn()?'on':'off'); Sound.resume(); if(Sound.isOn()) Sound.flip(); paint(); };
+  }
 
   let state = { spread:null, question:"", picks:[] };
 
@@ -340,8 +372,8 @@
           </div>
         </div>
       </div>`;
-    document.getElementById('ta-start').onclick = screenSpread;
-    document.getElementById('ta-history').onclick = screenHistory;
+    document.getElementById('ta-start').onclick = ()=>{ Sound.resume(); screenSpread(); };
+    document.getElementById('ta-history').onclick = ()=>{ Sound.resume(); screenHistory(); };
   }
 
   function screenSpread(){
@@ -376,10 +408,11 @@
         <p class="ta-sub" id="ta-shuf-msg" style="margin-top:1.4rem;">カードをシャッフルしています</p>
         <button class="ta-btn ta-btn-primary" id="ta-cut" style="margin-top:1.4rem;display:none;"><i class="ti ti-scissors" aria-hidden="true"></i>デッキをカットする</button>
       </div>`;
+    Sound.resume(); Sound.shuffle();
     const fan = document.getElementById('ta-fan');
     for(let i=0;i<5;i++){ const c=document.createElement('div'); c.className='ta-card ta-shuffling'; c.style.cssText=`width:70px;height:112px;margin:0 -22px;animation-delay:${i*0.08}s;background:#1a1533;border:1px solid #3a2f66;border-radius:9px;display:flex;align-items:center;justify-content:center;`; c.innerHTML=cardBack(); fan.appendChild(c); }
-    setTimeout(()=>{ fan.querySelectorAll('.ta-shuffling').forEach((c,i)=>{ c.classList.remove('ta-shuffling'); c.style.transition='transform .4s'; c.style.transform=`rotate(${(i-2)*9}deg)`; }); document.getElementById('ta-shuf-msg').textContent='準備ができました。デッキをカットしてください'; document.getElementById('ta-cut').style.display='inline-flex'; },1900);
-    document.getElementById('ta-cut').onclick = screenDraw;
+    setTimeout(()=>{ Sound.deal(); fan.querySelectorAll('.ta-shuffling').forEach((c,i)=>{ c.classList.remove('ta-shuffling'); c.style.transition='transform .4s'; c.style.transform=`rotate(${(i-2)*9}deg)`; }); document.getElementById('ta-shuf-msg').textContent='準備ができました。デッキをカットしてください'; document.getElementById('ta-cut').style.display='inline-flex'; },1900);
+    document.getElementById('ta-cut').onclick = ()=>{ Sound.deal(); screenDraw(); };
   }
 
   function screenDraw(){
@@ -399,6 +432,7 @@
   function pick(i,el){
     const sp=SPREADS[state.spread];
     if(state.picks.length>=sp.count) return;
+    Sound.pick();
     el.classList.add('picked');
     state.picks.push(state._deck[i]);
     const remain=sp.count-state.picks.length;
@@ -427,7 +461,8 @@
         <button class="ta-btn" id="ta-again"><i class="ti ti-refresh" aria-hidden="true"></i>もう一度占う</button>
       </div>`;
     scaleCeltic();
-    state.picks.forEach((p,i)=>{ setTimeout(()=>{ const f=document.getElementById('flip-'+i); if(f)f.classList.add('flipped'); }, 250+i*180); });
+    const step = state.picks.length<=3 ? 950 : 600;
+    state.picks.forEach((p,i)=>{ setTimeout(()=>{ const f=document.getElementById('flip-'+i); if(f){ Sound.flip(); f.classList.add('flipped'); } }, 700+i*step); });
     document.getElementById('ta-again').onclick=screenSpread;
     const saveBtn=document.getElementById('ta-save');
     saveBtn.onclick=()=>{ saveReading(); saveBtn.innerHTML='<i class="ti ti-check" aria-hidden="true"></i>保存しました'; saveBtn.disabled=true; };
@@ -459,6 +494,7 @@
     mount().querySelectorAll('.ta-del').forEach(b=>{ b.onclick=()=>{ const a=load(); a.splice(+b.dataset.i,1); save(a); screenHistory(); }; });
   }
 
+  initSound();
   screenTop();
 })();
 </script>
